@@ -1,10 +1,11 @@
 FROM jenkins:1.642.2
 USER root
 
+ENV PHANTOMJS_VERSION 2.1.1
 ENV MAVEN_VERSION 3.3.3
 ENV MAVEN_HOME /usr/share/maven
 
-RUN apt-get update && apt-get install -y curl git unzip
+RUN apt-get update && apt-get install -y bzip2 curl git unzip
 
 #============================
 # Maven
@@ -30,5 +31,14 @@ RUN curl -SL "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o awscli-bund
     && unzip awscli-bundle.zip \
     && ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws \
     && rm -rf awscli-bundle*
+
+#============================
+# PhantomJS
+#============================
+RUN apt-get install -y libfreetype6-dev libfontconfig1-dev
+RUN wget --no-check-certificate https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \
+    && tar -xf phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \
+    && mv phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ \
+    && rm -rf phantom*
 
 USER jenkins
